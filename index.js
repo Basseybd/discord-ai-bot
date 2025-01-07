@@ -1,7 +1,7 @@
-import "dotenv/config";
 import { Client, GatewayIntentBits, Events } from "discord.js";
 import { OpenAI } from "openai";
 import replicate from "replicate";
+require("dotenv").config();
 
 // OpenAI configuration
 const openai = new OpenAI({
