@@ -1,15 +1,12 @@
-require("dotenv").config();
-const { Client, GatewayIntentBits, Events } = require("discord.js");
-const fetch = require("node-fetch");
-const { Configuration, OpenAIApi } = require("openai");
-const replicate = require("replicate");
+import "dotenv/config";
+import { Client, GatewayIntentBits, Events } from "discord.js";
+import { OpenAI } from "openai";
+import replicate from "replicate";
 
 // OpenAI configuration
-const openai = new OpenAIApi(
-  new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-  })
-);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // Discord client setup
 const client = new Client({
@@ -27,18 +24,18 @@ client.once(Events.ClientReady, () => {
 client.on(Events.MessageCreate, async (message) => {
   if (message.author.bot) return; // Ignore bot messages
 
-  // Respond to "!ask" for text-based AI response using OpenAI GPT-4 Mini
+  // Respond to "!ask" for text-based AI response using OpenAI
   if (message.content.startsWith("!ask")) {
     const query = message.content.slice(5).trim();
     if (!query) return message.reply("Please provide a question after `!ask`.");
 
     try {
-      const openAiResponse = await openai.createChatCompletion({
-        model: "gpt-4o-mini", // GPT-4 Mini model
+      const openAiResponse = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
         messages: [{ role: "user", content: query }],
       });
 
-      const responseText = openAiResponse.data.choices[0].message.content;
+      const responseText = openAiResponse.choices[0].message.content;
       await message.reply(`🤖 **AI Response:**\n${responseText}`);
     } catch (error) {
       console.error(error);
@@ -46,7 +43,7 @@ client.on(Events.MessageCreate, async (message) => {
     }
   }
 
-  // Respond to "!image" for AI-generated images using Replicate Stable Diffusion
+  // Respond to "!image" for AI-generated images using Replicate
   if (message.content.startsWith("!image")) {
     const prompt = message.content.slice(7).trim();
     if (!prompt)
@@ -62,9 +59,10 @@ client.on(Events.MessageCreate, async (message) => {
           height: 512,
           guidance_scale: 7.5,
         },
+        apiToken: process.env.REPLICATE_API_KEY,
       });
 
-      if (result && result[0]) {
+      if (result && result.length) {
         await msg.delete();
         await message.channel.send({
           content: `🖼️ **Generated Image:**`,
