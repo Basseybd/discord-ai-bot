@@ -1,0 +1,20 @@
+{
+  "name": "discord-ai-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "discord.js": "^14.17.2",
+    "dotenv": "^16.4.7",
+    "node-fetch": "^3.3.2",
+    "openai": "^4.77.3",
+    "replicate": "^1.0.1"
+  }
+}
