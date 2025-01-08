@@ -79,7 +79,7 @@ client.on(Events.MessageCreate, async (message) => {
       if (prediction.status === "succeeded") {
         await msg.delete();
         await message.channel.send(
-          `🖼️ **Generated Image:**\n${prediction.output[0]}`
+          `🖼️ **Generated Image:**\n${prediction.output}`
         );
       } else {
         message.reply(
