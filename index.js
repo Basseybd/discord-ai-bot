@@ -1,7 +1,13 @@
 require("dotenv").config();
-const { Client, GatewayIntentBits, Events } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  Events,
+  AttachmentBuilder,
+} = require("discord.js");
 const Replicate = require("replicate");
 const { OpenAI } = require("openai");
+const axios = require("axios"); // Add axios for downloading images
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_KEY,
@@ -78,9 +84,22 @@ client.on(Events.MessageCreate, async (message) => {
 
       if (prediction.status === "succeeded") {
         await msg.delete();
-        await message.channel.send(
-          `🖼️ **Generated Image:**\n${prediction.output}`
-        );
+
+        // Download the image from the URL
+        const imageUrl = prediction.output;
+        const response = await axios.get(imageUrl, {
+          responseType: "arraybuffer",
+        });
+        const buffer = Buffer.from(response.data, "binary");
+
+        // Create an attachment and send it as an image
+        const attachment = new AttachmentBuilder(buffer, {
+          name: "generated-image.png",
+        });
+        await message.channel.send({
+          content: `🖼️ **Generated Image:**`,
+          files: [attachment],
+        });
       } else {
         message.reply(
           `Error: Prediction ended with status: ${prediction.status}`
