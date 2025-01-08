@@ -78,10 +78,9 @@ client.on(Events.MessageCreate, async (message) => {
 
       if (prediction.status === "succeeded") {
         await msg.delete();
-        await message.channel.send({
-          content: `🖼️ **Generated Image:**`,
-          files: [{ attachment: prediction.output[0], name: "flux-image.png" }],
-        });
+        await message.channel.send(
+          `🖼️ **Generated Image:**\n${prediction.output[0]}`
+        );
       } else {
         message.reply(
           `Error: Prediction ended with status: ${prediction.status}`
