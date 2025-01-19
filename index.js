@@ -39,19 +39,24 @@ client.on(Events.MessageCreate, async (message) => {
     if (!query) return message.reply("Please provide a question after `!ask`.");
 
     try {
+      // Add instruction to limit response length to 2000 characters
       const openAiResponse = await openai.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: query }],
+        messages: [
+          {
+            role: "system",
+            content: "Limit your response to under 2000 characters.",
+          },
+          { role: "user", content: query },
+        ],
       });
 
       const responseText = openAiResponse.choices[0].message.content;
 
-      // Split response into chunks if it exceeds Discord's 2000-character limit
       if (responseText.length > 2000) {
-        const chunks = responseText.match(/[\s\S]{1,2000}/g) || [];
-        for (const chunk of chunks) {
-          await message.channel.send(`🤖 **AI Response:**\n${chunk}`);
-        }
+        message.reply(
+          "Oops! The response exceeded 2000 characters. Please refine your query."
+        );
       } else {
         await message.reply(`🤖 **AI Response:**\n${responseText}`);
       }
