@@ -45,7 +45,16 @@ client.on(Events.MessageCreate, async (message) => {
       });
 
       const responseText = openAiResponse.choices[0].message.content;
-      await message.reply(`🤖 **AI Response:**\n${responseText}`);
+
+      // Split response into chunks if it exceeds Discord's 2000-character limit
+      if (responseText.length > 2000) {
+        const chunks = responseText.match(/[\s\S]{1,2000}/g) || [];
+        for (const chunk of chunks) {
+          await message.channel.send(`🤖 **AI Response:**\n${chunk}`);
+        }
+      } else {
+        await message.reply(`🤖 **AI Response:**\n${responseText}`);
+      }
     } catch (error) {
       console.error("[TEXT_ERROR]", error);
       message.reply("Oops! Something went wrong.");
